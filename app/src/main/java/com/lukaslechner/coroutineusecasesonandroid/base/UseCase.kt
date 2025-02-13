@@ -76,7 +76,8 @@ private val coroutinesUseCases =
             UseCase(
                 useCase2UsingCallbacksDescription,
                 SequentialNetworkRequestsCallbacksActivity::class.java
-            ), UseCase(
+            ),
+            UseCase(
                 useCase2UsingRxDescription,
                 SequentialNetworkRequestsRxActivity::class.java
             ),
