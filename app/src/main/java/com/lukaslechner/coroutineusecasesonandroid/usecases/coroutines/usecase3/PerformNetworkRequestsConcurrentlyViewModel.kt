@@ -31,12 +31,11 @@ class PerformNetworkRequestsConcurrentlyViewModel(
     fun performNetworkRequestsConcurrently() {
         uiState.value = UiState.Loading
 
-        val oreoFeaturesDeferred = viewModelScope.async { mockApi.getAndroidVersionFeatures(27) }
-        val pieFeaturesDeferred = viewModelScope.async { mockApi.getAndroidVersionFeatures(28) }
-        val android10FeaturesDeferred =
-            viewModelScope.async { mockApi.getAndroidVersionFeatures(29) }
-
         viewModelScope.launch {
+
+            val oreoFeaturesDeferred = async { mockApi.getAndroidVersionFeatures(27) }
+            val pieFeaturesDeferred = async { mockApi.getAndroidVersionFeatures(28) }
+            val android10FeaturesDeferred = async { mockApi.getAndroidVersionFeatures(29) }
             try {
                 val versionFeatures =
                     awaitAll(oreoFeaturesDeferred, pieFeaturesDeferred, android10FeaturesDeferred)
