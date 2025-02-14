@@ -1,7 +1,11 @@
 package com.lukaslechner.coroutineusecasesonandroid.usecases.coroutines.usecase7
 
+import androidx.lifecycle.viewModelScope
 import com.lukaslechner.coroutineusecasesonandroid.base.BaseViewModel
 import com.lukaslechner.coroutineusecasesonandroid.mock.MockApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 
 class TimeoutAndRetryViewModel(
     private val api: MockApi = mockApi()
@@ -12,9 +16,23 @@ class TimeoutAndRetryViewModel(
         val numberOfRetries = 2
         val timeout = 1000L
 
-        // TODO: Exercise 3
-        // switch to branch "coroutine_course_complete" to see solution
-
-        // run api.getAndroidVersionFeatures(27) and api.getAndroidVersionFeatures(28) in parallel
+        viewModelScope.launch {
+            try {
+                val versionFeatures = awaitAll(
+                    async {
+                        retry(numOfRetries = numberOfRetries, timeout = timeout) {
+                            api.getAndroidVersionFeatures(27)
+                        }
+                    },
+                    async {
+                        retry(numOfRetries = numberOfRetries, timeout = timeout) {
+                            api.getAndroidVersionFeatures(28)
+                        }
+                    })
+                uiState.value = UiState.Success(versionFeatures = versionFeatures)
+            }catch (e: Exception) {
+                uiState.value = UiState.Error(message = "Network error")
+            }
+        }
     }
 }
